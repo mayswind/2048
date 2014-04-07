@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 using Microsoft.Phone.Controls;
@@ -9,13 +10,13 @@ namespace WP2048
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private GameManager _gameManager;
+        private GameManager<ContentControl> _gameManager;
 
         public MainPage()
         {
             InitializeComponent();
-
-            this._gameManager = new GameManager(this.gridTiles);
+            
+            this._gameManager = new GameManager<ContentControl>(this.gridTiles);
             this._gameManager.GameScoreChanged += gameManager_GameScoreChanged;
             this._gameManager.GameStatusChanged += gameManager_GameStatusChanged;
         }

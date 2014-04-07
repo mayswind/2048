@@ -7,7 +7,7 @@ namespace WP2048
     /// <summary>
     /// 游戏管理器
     /// </summary>
-    internal class GameManager
+    internal class GameManager<T> where T : ContentControl
     {
         #region 常量
         private const Int32 Size = 4;
@@ -32,7 +32,7 @@ namespace WP2048
         #endregion
 
         #region 字段
-        private GridManager _gridManager;
+        private GridManager<T> _gridManager;
         private GameStatus _gameStatus;
         private Int32 _scores;
         private Random _rand;
@@ -41,7 +41,7 @@ namespace WP2048
         #region 构造方法
         internal GameManager(Grid parentGrid)
         {
-            this._gridManager = new GridManager(GameManager.Size, parentGrid);
+            this._gridManager = new GridManager<T>(GameManager<T>.Size, parentGrid);
             this._rand = new Random();
         }
         #endregion
@@ -53,6 +53,16 @@ namespace WP2048
         internal GameStatus GameStatus
         {
             get { return this._gameStatus; }
+            private set
+            {
+                GameStatus oldStatus = this._gameStatus;
+                this._gameStatus = value;
+
+                if (oldStatus != value && this.GameStatusChanged != null)
+                {
+                    this.GameStatusChanged(this, new EventArgs());
+                }
+            }
         }
 
         /// <summary>
@@ -61,6 +71,16 @@ namespace WP2048
         internal Int32 Scores
         {
             get { return this._scores; }
+            private set
+            {
+                Int32 oldScores = this._scores;
+                this._scores = value;
+
+                if (oldScores != value && this.GameScoreChanged != null)
+                {
+                    this.GameScoreChanged(this, new EventArgs());
+                }
+            }
         }
         #endregion
 
@@ -90,31 +110,12 @@ namespace WP2048
         /// </summary>
         internal void RestartGame()
         {
-            GameStatus oldStatus = this._gameStatus;
-            Int32 oldScores = this._scores;
+            this.GameStatus = GameStatus.Running;
+            this.Scores = 0;
 
-            this._gameStatus = GameStatus.Running;
-            this._scores = 0;
+            this._gridManager.ForEach((i, j) => this.SetTileValue(i, j, 0));
 
-            if (this._gameStatus != oldStatus && this.GameStatusChanged != null)
-            {
-                this.GameStatusChanged(this, new EventArgs());
-            }
-
-            if (this._scores != oldScores && this.GameScoreChanged != null)
-            {
-                this.GameScoreChanged(this, new EventArgs());
-            }
-
-            for (Int32 i = 0; i < this._gridManager.GridSize; i++)
-            {
-                for (Int32 j = 0 ; j < this._gridManager.GridSize; j++)
-                {
-                    this.SetTileValue(i, j, 0);
-                }
-            }
-
-            for (Int32 i = 0; i < GameManager.StartTiles; i++)
+            for (Int32 i = 0; i < GameManager<T>.StartTiles; i++)
             {
                 this.GenerateRandomTile();
             }
@@ -129,57 +130,34 @@ namespace WP2048
         {
             if (!this._gridManager.IsMovesAvailable())
             {
-                this._gameStatus = GameStatus.Failed;
+                this.GameStatus = GameStatus.Failed;
                 return;
             }
 
-            Int32 oldScores = this._scores;
+            Int32 newScores = this._scores;
             Boolean moved = false;
 
             moved |= this.CompressTiles(dx, dy);
 
-            for (Int32 i = 0; i < this._gridManager.GridSize; i++)
+            this.ForEach(dx, dy, (i, j, v, ni, nj, nv) =>
             {
-                for (Int32 j = 0; j < this._gridManager.GridSize; j++)
+                if (v != nv)
                 {
-                    Int32 currentValue = this.GetTileValue(i, j);
-
-                    if (currentValue == 0)
-                    {
-                        continue;
-                    }
-
-                    Int32 ni = i + dy;
-                    Int32 nj = j + dx;
-
-                    if (!this._gridManager.IsInBounds(ni, nj))
-                    {
-                        continue;
-                    }
-
-                    Int32 otherValue = this.GetTileValue(ni, nj);
-
-                    if (currentValue == otherValue)
-                    {
-                        Int32 newValue = currentValue * 2;
-                        this.SetTileValue(ni, nj, newValue);
-                        this.SetTileValue(i, j, 0);
-
-                        this._scores += newValue;
-                        moved = true;
-
-                        if (newValue == 2048)
-                        {
-                            this._gameStatus = GameStatus.Win;
-
-                            if (this.GameStatusChanged != null)
-                            {
-                                this.GameStatusChanged(this, new EventArgs());
-                            }
-                        }
-                    }
+                    return;
                 }
-            }
+
+                Int32 newValue = v * 2;
+                this.SetTileValue(ni, nj, newValue);
+                this.SetTileValue(i, j, 0);
+
+                moved = true;
+                newScores += newValue;
+
+                if (newValue == 2048)
+                {
+                    this.GameStatus = GameStatus.Win;
+                }
+            });
 
             if (moved)
             {
@@ -188,55 +166,27 @@ namespace WP2048
 
                 if (!this._gridManager.IsMovesAvailable())
                 {
-                    this._gameStatus = GameStatus.Failed;
-
-                    if (this.GameStatusChanged != null)
-                    {
-                        this.GameStatusChanged(this, new EventArgs());
-                    }
+                    this.GameStatus = GameStatus.Failed;
                 }
             }
 
-            if (this._scores != oldScores && this.GameScoreChanged != null)
-            {
-                this.GameScoreChanged(this, new EventArgs());
-            }
+            this.Scores = newScores;
         }
 
         private Boolean CompressTiles(Int32 dx, Int32 dy)
         {
             Boolean moved = false;
 
-            for (Int32 i = 0; i < this._gridManager.GridSize; i++)
+            this.ForEach(dx, dy, (i, j, v, ni, nj, nv) =>
             {
-                for (Int32 j = 0; j < this._gridManager.GridSize; j++)
+                if (nv == 0)
                 {
-                    Int32 currentValue = this.GetTileValue(i, j);
+                    this.SetTileValue(ni, nj, v);
+                    this.SetTileValue(i, j, 0);
 
-                    if (currentValue == 0)
-                    {
-                        continue;
-                    }
-
-                    Int32 ni = i + dy;
-                    Int32 nj = j + dx;
-
-                    if (!this._gridManager.IsInBounds(ni, nj))
-                    {
-                        continue;
-                    }
-
-                    Int32 otherValue = this.GetTileValue(ni, nj);
-
-                    if (otherValue == 0)
-                    {
-                        this.SetTileValue(ni, nj, currentValue);
-                        this.SetTileValue(i, j, 0);
-
-                        moved = true;
-                    }
+                    moved = true;
                 }
-            }
+            });
 
             if (moved)
             {
@@ -248,6 +198,31 @@ namespace WP2048
         #endregion
 
         #region 私有方法
+        private void ForEach(Int32 dx, Int32 dy, Action<Int32, Int32, Int32, Int32, Int32, Int32> action)
+        {
+            this._gridManager.ForEach((i, j) =>
+            {
+                Int32 currentValue = this.GetTileValue(i, j);
+
+                if (currentValue == 0)
+                {
+                    return;
+                }
+
+                Int32 ni = i + dy;
+                Int32 nj = j + dx;
+
+                if (!this._gridManager.IsInBounds(ni, nj))
+                {
+                    return;
+                }
+
+                Int32 otherValue = this.GetTileValue(ni, nj);
+
+                action(i, j, currentValue, ni, nj, otherValue);
+            });
+        }
+
         private void GenerateRandomTile()
         {
             Point[] tilePoints = this._gridManager.GetAvailableTiles();
@@ -257,8 +232,8 @@ namespace WP2048
                 return;
             }
 
-            Int32 value = this._rand.NextDouble() < 0.9 ? 2 : 4;
             Int32 index = this._rand.Next(0, tilePoints.Length);
+            Int32 value = this._rand.NextDouble() < 0.9 ? 2 : 4;
 
             this.SetTileValue((Int32)tilePoints[index].X, (Int32)tilePoints[index].Y, value);
         }
@@ -271,7 +246,7 @@ namespace WP2048
         private void SetTileValue(Int32 x, Int32 y, Int32 value)
         {
             Int32 index = (value > 2048 ? 12 : (value < 2 ? 0 : (Int32)Math.Log(value, 2)));
-            TileStyle style = GameManager.Styles[index];
+            TileStyle style = GameManager<T>.Styles[index];
 
             this._gridManager.SetTileValue(x, y, value, style);
         }

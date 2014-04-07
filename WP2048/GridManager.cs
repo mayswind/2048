@@ -9,11 +9,16 @@ namespace WP2048
     /// <summary>
     /// 布局管理器
     /// </summary>
-    internal class GridManager
+    internal class GridManager<T> where T : ContentControl
     {
+        #region 常量
+        private static readonly Int32[] VectorX = new Int32[4] { 0, 1, 0, -1 };//Up Right Bottom Left
+        private static readonly Int32[] VectorY = new Int32[4] { -1, 0, 1, 0 };
+        #endregion
+
         #region 字段
         private Int32 _gridSize;
-        private Button[,] _controls;
+        private T[,] _controls;
         private Int32[,] _tilesValue;
         #endregion
 
@@ -36,10 +41,50 @@ namespace WP2048
         internal GridManager(Int32 gridSize, Grid parentGrid)
         {
             this._gridSize = gridSize;
-            this._controls = new Button[this._gridSize, this._gridSize];
+            this._controls = new T[this._gridSize, this._gridSize];
             this._tilesValue = new Int32[this._gridSize, this._gridSize];
 
-            this.BindGrid(parentGrid);
+            this.ForEach((i, j) => this._controls[i, j] = parentGrid.Children[i * this._gridSize + j] as T);
+        }
+        #endregion
+
+        #region 遍历方法
+        /// <summary>
+        /// 遍历所有格子
+        /// </summary>
+        /// <param name="func">操作方法</param>
+        /// <returns>自定义返回值</returns>
+        internal Boolean ForEach(Func<Int32, Int32, Boolean> func)
+        {
+            for (Int32 i = 0; i < this._gridSize; i++)
+            {
+                for (Int32 j = 0; j < this._gridSize; j++)
+                {
+                    Boolean result = func(i, j);
+
+                    if (result)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 遍历所有格子
+        /// </summary>
+        /// <param name="action">操作方法</param>
+        internal void ForEach(Action<Int32, Int32> action)
+        {
+            for (Int32 i = 0; i < this._gridSize; i++)
+            {
+                for (Int32 j = 0; j < this._gridSize; j++)
+                {
+                    action(i, j);
+                }
+            }
         }
         #endregion
 
@@ -50,18 +95,7 @@ namespace WP2048
         /// <returns>是否有空余的位置</returns>
         internal Boolean IsGridsHasAvailableTile()
         {
-            for (Int32 i = 0; i < this._gridSize; i++)
-            {
-                for (Int32 j = 0; j < this._gridSize; j++)
-                {
-                    if (this.GetTileValue(i, j) == 0)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return this.ForEach((i, j) => this.GetTileValue(i, j) == 0);
         }
 
         /// <summary>
@@ -70,34 +104,30 @@ namespace WP2048
         /// <returns>是否有可合并的磁贴</returns>
         internal Boolean IsGridsHasMergableTile()
         {
-            for (Int32 i = 0; i < this._gridSize; i++)
+            return this.ForEach((i, j) =>
             {
-                for (Int32 j = 0; j < this._gridSize; j++)
+                Int32 currentValue = this.GetTileValue(i, j);
+
+                for (Int32 k = 0; k < 4; k++)
                 {
-                    Int32 currentValue = this.GetTileValue(i, j);
+                    Int32 ni = i + GridManager<T>.VectorX[k];
+                    Int32 nj = j + GridManager<T>.VectorY[k];
 
-                    for (Int32 k = 0; k < 4; k++)
+                    if (!this.IsInBounds(ni, nj))
                     {
-                        Tuple<Int32, Int32> v = this.GetVector(k);
-                        Int32 ni = i + (Int32)v.Item2;
-                        Int32 nj = j + (Int32)v.Item1;
+                        continue;
+                    }
 
-                        if (!IsInBounds(ni, nj))
-                        {
-                            continue;
-                        }
+                    Int32 otherValue = this.GetTileValue(ni, nj);
 
-                        Int32 otherValue = this.GetTileValue(ni, nj);
-
-                        if (currentValue == otherValue)
-                        {
-                            return true;
-                        }
+                    if (currentValue == otherValue)
+                    {
+                        return true;
                     }
                 }
-            }
 
-            return false;
+                return false;
+            });
         }
 
         /// <summary>
@@ -131,23 +161,20 @@ namespace WP2048
         {
             List<Point> result = new List<Point>();
 
-            for (Int32 i = 0; i < this._gridSize; i++)
+            this.ForEach((i, j) =>
             {
-                for (Int32 j = 0; j < this._gridSize; j++)
+                if (this.GetTileValue(i, j) == 0)
                 {
-                    if (this.GetTileValue(i, j) == 0)
-                    {
-                        result.Add(new Point(i, j));
-                    }
+                    result.Add(new Point(i, j));
                 }
-            }
+            });
 
             return result.ToArray();
         }
 
         internal void SetTileValue(Int32 x, Int32 y, Int32 value, TileStyle style)
         {
-            Button tile = this._controls[x, y];
+            T tile = this._controls[x, y];
 
             tile.FontSize = style.FontSize;
             tile.FontWeight = style.FontWeight;
@@ -156,36 +183,6 @@ namespace WP2048
 
             tile.Content = (value < 2 ? "" : value.ToString());
             this._tilesValue[x, y] = value;
-        }
-        #endregion
-
-        #region 私有方法
-        private void BindGrid(Grid grid)
-        {
-            for (Int32 i = 0; i < this._gridSize; i++)
-            {
-                for (Int32 j = 0; j < this._gridSize; j++)
-                {
-                    this._controls[i, j] = grid.Children[i * this._gridSize + j] as Button;
-                }
-            }
-        }
-
-        private Tuple<Int32, Int32> GetVector(Int32 type)
-        {
-            switch (type)
-            {
-                case 0:
-                    return new Tuple<Int32, Int32>(0, -1);//Up
-                case 1:
-                    return new Tuple<Int32, Int32>(1, 0);//Right
-                case 2:
-                    return new Tuple<Int32, Int32>(0, 1);//Bottom
-                case 3:
-                    return new Tuple<Int32, Int32>(-1, 0);//Left
-                default:
-                    return new Tuple<Int32, Int32>(0, 0);
-            }
         }
         #endregion
     }
