@@ -118,6 +118,11 @@ namespace WP2048
                 {
                     Int32 currentValue = this.GetTileValue(i, j);
 
+                    if (currentValue == 0)
+                    {
+                        continue;
+                    }
+
                     Int32 ni = i + dy;
                     Int32 nj = j + dx;
 
