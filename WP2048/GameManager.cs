@@ -64,6 +64,18 @@ namespace WP2048
         }
         #endregion
 
+        #region 事件
+        /// <summary>
+        /// 游戏状态更改事件
+        /// </summary>
+        internal event GameStatusChangedHandler GameStatusChanged;
+
+        /// <summary>
+        /// 游戏分数更改事件
+        /// </summary>
+        internal event GameScoreChangedHandler GameScoreChanged;
+        #endregion
+
         #region 方法
         /// <summary>
         /// 初始化游戏
@@ -78,8 +90,21 @@ namespace WP2048
         /// </summary>
         internal void RestartGame()
         {
+            GameStatus oldStatus = this._gameStatus;
+            Int32 oldScores = this._scores;
+
             this._gameStatus = GameStatus.Running;
             this._scores = 0;
+
+            if (this._gameStatus != oldStatus && this.GameStatusChanged != null)
+            {
+                this.GameStatusChanged(this, new EventArgs());
+            }
+
+            if (this._scores != oldScores && this.GameScoreChanged != null)
+            {
+                this.GameScoreChanged(this, new EventArgs());
+            }
 
             for (Int32 i = 0; i < this._gridManager.GridSize; i++)
             {
@@ -108,6 +133,7 @@ namespace WP2048
                 return;
             }
 
+            Int32 oldScores = this._scores;
             Boolean moved = false;
 
             moved |= this.CompressTiles(dx, dy);
@@ -145,6 +171,11 @@ namespace WP2048
                         if (newValue == 2048)
                         {
                             this._gameStatus = GameStatus.Win;
+
+                            if (this.GameStatusChanged != null)
+                            {
+                                this.GameStatusChanged(this, new EventArgs());
+                            }
                         }
                     }
                 }
@@ -158,8 +189,17 @@ namespace WP2048
                 if (!this._gridManager.IsMovesAvailable())
                 {
                     this._gameStatus = GameStatus.Failed;
-                    return;
+
+                    if (this.GameStatusChanged != null)
+                    {
+                        this.GameStatusChanged(this, new EventArgs());
+                    }
                 }
+            }
+
+            if (this._scores != oldScores && this.GameScoreChanged != null)
+            {
+                this.GameScoreChanged(this, new EventArgs());
             }
         }
 

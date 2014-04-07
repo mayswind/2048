@@ -14,7 +14,10 @@ namespace WP2048
         public MainPage()
         {
             InitializeComponent();
+
             this._gameManager = new GameManager(this.gridTiles);
+            this._gameManager.GameScoreChanged += gameManager_GameScoreChanged;
+            this._gameManager.GameStatusChanged += gameManager_GameStatusChanged;
         }
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
@@ -22,6 +25,28 @@ namespace WP2048
             this._gameManager.InitGame();
             this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
             this.bestScore.Text = StorageManager.ReadBestScore().ToString();
+        }
+
+        private void gameManager_GameStatusChanged(object sender, EventArgs args)
+        {
+            if (this._gameManager.GameStatus == GameStatus.Win)
+            {
+                MessageBox.Show("You are win!", "2048", MessageBoxButton.OK);
+            }
+            else if (this._gameManager.GameStatus == GameStatus.Failed)
+            {
+                this.gridGameOverOverlay.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void gameManager_GameScoreChanged(object sender, EventArgs args)
+        {
+            this.currentScore.Text = this._gameManager.Scores.ToString();
+
+            if (StorageManager.SaveBestScore(this._gameManager.Scores))
+            {
+                this.bestScore.Text = StorageManager.ReadBestScore().ToString();
+            }
         }
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
@@ -51,21 +76,6 @@ namespace WP2048
             dy = (dy == 0 ? 0 : (dy > 0 ? 1 : -1));
 
             this._gameManager.CombineTiles(dx, dy);
-            this.currentScore.Text = this._gameManager.Scores.ToString();
-
-            if (StorageManager.SaveBestScore(this._gameManager.Scores))
-            {
-                this.bestScore.Text = StorageManager.ReadBestScore().ToString();
-            }
-
-            if (this._gameManager.GameStatus == GameStatus.Win)
-            {
-                MessageBox.Show("You are win!", "2048", MessageBoxButton.OK);
-            }
-            else if (this._gameManager.GameStatus == GameStatus.Failed)
-            {
-                this.gridGameOverOverlay.Visibility = Visibility.Visible;
-            }
         }
 
         private void linkCreatorUrl_Click(object sender, RoutedEventArgs e)
