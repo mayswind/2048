@@ -64,9 +64,10 @@ namespace WP2048
             }
             else if (this._gameManager.GameStatus == GameStatus.Failed)
             {
+                this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
+
                 if (MessageBox.Show("Game over! Try again?", "2048", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
-                    this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
                     this._gameManager.RestartGame();
                 }
                 else
