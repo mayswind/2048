@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace WP2048
 {
     /// <summary>

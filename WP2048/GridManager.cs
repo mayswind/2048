@@ -78,9 +78,9 @@ namespace WP2048
 
                     for (Int32 k = 0; k < 4; k++)
                     {
-                        Point p = this.GetVector(k);
-                        Int32 ni = i + (Int32)p.Y;
-                        Int32 nj = j + (Int32)p.X;
+                        Tuple<Int32, Int32> v = this.GetVector(k);
+                        Int32 ni = i + (Int32)v.Item2;
+                        Int32 nj = j + (Int32)v.Item1;
 
                         if (!IsInBounds(ni, nj))
                         {
@@ -171,20 +171,20 @@ namespace WP2048
             }
         }
 
-        private Point GetVector(Int32 type)
+        private Tuple<Int32, Int32> GetVector(Int32 type)
         {
             switch (type)
             {
                 case 0:
-                    return new Point(0, -1);//Up
+                    return new Tuple<Int32, Int32>(0, -1);//Up
                 case 1:
-                    return new Point(1, 0);//Right
+                    return new Tuple<Int32, Int32>(1, 0);//Right
                 case 2:
-                    return new Point(0, 1);//Bottom
+                    return new Tuple<Int32, Int32>(0, 1);//Bottom
                 case 3:
-                    return new Point(-1, 0);//Left
+                    return new Tuple<Int32, Int32>(-1, 0);//Left
                 default:
-                    return new Point();
+                    return new Tuple<Int32, Int32>(0, 0);
             }
         }
         #endregion
