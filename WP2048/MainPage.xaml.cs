@@ -20,11 +20,13 @@ namespace WP2048
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
         {
             this._gameManager.InitGame();
+            this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
             this.bestScore.Text = StorageManager.ReadBestScore().ToString();
         }
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
+            this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
             this._gameManager.RestartGame();
         }
 
@@ -64,7 +66,12 @@ namespace WP2048
             {
                 if (MessageBox.Show("Game over! Try again?", "2048", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
+                    this.gridGameOverOverlay.Visibility = Visibility.Collapsed;
                     this._gameManager.RestartGame();
+                }
+                else
+                {
+                    this.gridGameOverOverlay.Visibility = Visibility.Visible;
                 }
             }
         }
