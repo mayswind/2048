@@ -1,0 +1,92 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="WP2048.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="Arial"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="#FF776E65"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True" Loaded="PhoneApplicationPage_Loaded">
+
+    <Grid x:Name="gridRoot" Background="#FFFAF8EF">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Margin="12,10,0,5">
+            <TextBlock Text="2048" Foreground="#FF776E65" FontWeight="Bold" Margin="9,0,0,0" Style="{StaticResource PhoneTextTitle1Style}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="12,10,0,5" FlowDirection="RightToLeft">
+            <Grid Background="#FFBBADA0" Margin="10,10,5,10">
+                <TextBlock Foreground="White" TextAlignment="Center" Margin="5">BEST<LineBreak /><LineBreak /><Run x:Name="bestScore" FontWeight="Bold">0</Run></TextBlock>
+            </Grid>
+            <Grid Background="#FFBBADA0" Margin="5,10,10,10">
+                <TextBlock Foreground="White" TextAlignment="Center" Margin="5">SCORE<LineBreak /><LineBreak /><Run x:Name="currentScore" FontWeight="Bold">0</Run></TextBlock>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="12,17,0,15">
+            <TextBlock Foreground="#FF776E65" VerticalAlignment="Center">Join and get to the 2048 tile!</TextBlock>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="12,17,0,15" FlowDirection="RightToLeft">
+            <Button x:Name="btnNewGame" Content="New Game" Click="btnNewGame_Click" Background="#FF8F7A66" BorderThickness="0" />
+        </StackPanel>
+
+        <Grid x:Name="gridTiles" Grid.Row="2" Margin="0,0,0,0" Background="#FFBBADA0" ManipulationCompleted="gridTiles_ManipulationCompleted">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="0" Grid.Column="1" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="0" Grid.Column="2" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="0" Grid.Column="3" IsEnabled="False" BorderThickness="0" />
+
+            <Button Grid.Row="1" Grid.Column="0" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="1" Grid.Column="1" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="1" Grid.Column="2" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="1" Grid.Column="3" IsEnabled="False" BorderThickness="0" />
+
+            <Button Grid.Row="2" Grid.Column="0" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="2" Grid.Column="1" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="2" Grid.Column="2" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="2" Grid.Column="3" IsEnabled="False" BorderThickness="0" />
+
+            <Button Grid.Row="3" Grid.Column="0" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="3" Grid.Column="1" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="3" Grid.Column="2" IsEnabled="False" BorderThickness="0" />
+            <Button Grid.Row="3" Grid.Column="3" IsEnabled="False" BorderThickness="0" />
+        </Grid>
+        
+        <StackPanel Grid.Row="3" Margin="0,25,0,20">
+            <RichTextBox Foreground="#FF776E65" FontWeight="Light" TextWrapping="Wrap">
+                <Paragraph>
+                    2048 for Windows Phone created by
+                    <Hyperlink x:Name="linkCreatorUrl" FontWeight="SemiBold" Foreground="#FF776E65" MouseOverForeground="#FF776E65" Click="linkCreatorUrl_Click">MaysWind</Hyperlink>, 
+                    Original 2048 created by
+                    <Hyperlink x:Name="linkOriginUrl" FontWeight="SemiBold" Foreground="#FF776E65" MouseOverForeground="#FF776E65" Click="linkOriginUrl_Click">Gabriele Cirulli</Hyperlink>.
+                </Paragraph>
+            </RichTextBox>
+        </StackPanel>
+    </Grid>
+</phone:PhoneApplicationPage>
