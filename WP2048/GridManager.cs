@@ -181,8 +181,13 @@ namespace WP2048
             tile.Foreground = new SolidColorBrush(style.ForeColor);
             tile.Background = new SolidColorBrush(style.BackColor);
 
-            tile.Content = (value < 2 ? "" : value.ToString());
+            tile.Content = (Math.Abs(value) < 2 ? "" : Math.Abs(value).ToString());
             this._tilesValue[x, y] = value;
+        }
+
+        internal void SetTileRightValue(Int32 x, Int32 y)
+        {
+            this._tilesValue[x, y] = Math.Abs(this._tilesValue[x, y]);
         }
         #endregion
     }

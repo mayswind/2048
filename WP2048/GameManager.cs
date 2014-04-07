@@ -141,13 +141,13 @@ namespace WP2048
 
             this.ForEach(dx, dy, (i, j, v, ni, nj, nv) =>
             {
-                if (v != nv)
+                if (v <= 0 || v != nv)
                 {
                     return;
                 }
 
                 Int32 newValue = v * 2;
-                this.SetTileValue(ni, nj, newValue);
+                this.SetTileValue(ni, nj, -newValue);//负值不能重复合并
                 this.SetTileValue(i, j, 0);
 
                 moved = true;
@@ -158,6 +158,8 @@ namespace WP2048
                     this.GameStatus = GameStatus.Win;
                 }
             });
+
+            this._gridManager.ForEach((i, j) => this._gridManager.SetTileRightValue(i, j));
 
             if (moved)
             {
@@ -200,27 +202,68 @@ namespace WP2048
         #region 私有方法
         private void ForEach(Int32 dx, Int32 dy, Action<Int32, Int32, Int32, Int32, Int32, Int32> action)
         {
-            this._gridManager.ForEach((i, j) =>
+            if (dx == 0 && dy < 0)//Up
             {
-                Int32 currentValue = this.GetTileValue(i, j);
-
-                if (currentValue == 0)
+                for (Int32 i = 0; i < this._gridManager.GridSize; i++)
                 {
-                    return;
+                    for (Int32 j = 0; j < this._gridManager.GridSize; j++)
+                    {
+                        this.ForEach(i, j, dx, dy, action);
+                    }
                 }
-
-                Int32 ni = i + dy;
-                Int32 nj = j + dx;
-
-                if (!this._gridManager.IsInBounds(ni, nj))
+            }
+            else if (dx > 0 && dy == 0)//Right
+            {
+                for (Int32 j = this._gridManager.GridSize - 1; j >= 0; j--)
                 {
-                    return;
+                    for (Int32 i = this._gridManager.GridSize - 1; i >= 0; i--)
+                    {
+                        this.ForEach(i, j, dx, dy, action);
+                    }
                 }
+            }
+            else if (dx == 0 && dy > 0)//Bottom
+            {
+                for (Int32 i = this._gridManager.GridSize - 1; i >= 0; i--)
+                {
+                    for (Int32 j = this._gridManager.GridSize - 1; j >= 0; j--)
+                    {
+                        this.ForEach(i, j, dx, dy, action);
+                    }
+                }
+            }
+            else if (dx < 0 && dy == 0)//Left
+            {
+                for (Int32 j = 0; j < this._gridManager.GridSize; j++)
+                {
+                    for (Int32 i = 0; i < this._gridManager.GridSize; i++)
+                    {
+                        this.ForEach(i, j, dx, dy, action);
+                    }
+                }
+            }
+        }
 
-                Int32 otherValue = this.GetTileValue(ni, nj);
+        private void ForEach(Int32 i, Int32 j, Int32 dx, Int32 dy, Action<Int32, Int32, Int32, Int32, Int32, Int32> action)
+        {
+            Int32 currentValue = this._gridManager.GetTileValue(i, j);
 
-                action(i, j, currentValue, ni, nj, otherValue);
-            });
+            if (currentValue == 0)
+            {
+                return;
+            }
+
+            Int32 ni = i + dy;
+            Int32 nj = j + dx;
+
+            if (!this._gridManager.IsInBounds(ni, nj))
+            {
+                return;
+            }
+
+            Int32 otherValue = this._gridManager.GetTileValue(ni, nj);
+
+            action(i, j, currentValue, ni, nj, otherValue);
         }
 
         private void GenerateRandomTile()
@@ -238,14 +281,10 @@ namespace WP2048
             this.SetTileValue((Int32)tilePoints[index].X, (Int32)tilePoints[index].Y, value);
         }
 
-        private Int32 GetTileValue(Int32 x, Int32 y)
-        {
-            return this._gridManager.GetTileValue(x, y);
-        }
-
         private void SetTileValue(Int32 x, Int32 y, Int32 value)
         {
-            Int32 index = (value > 2048 ? 12 : (value < 2 ? 0 : (Int32)Math.Log(value, 2)));
+            Int32 realValue = Math.Abs(value);
+            Int32 index = (realValue > 2048 ? 12 : (realValue < 2 ? 0 : (Int32)Math.Log(realValue, 2)));
             TileStyle style = GameManager<T>.Styles[index];
 
             this._gridManager.SetTileValue(x, y, value, style);
