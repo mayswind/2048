@@ -152,14 +152,14 @@ namespace WP2048
 
             if (moved)
             {
+                this.CompressTiles(dx, dy);
+                this.GenerateRandomTile();
+
                 if (!this._gridManager.IsMovesAvailable())
                 {
                     this._gameStatus = GameStatus.Failed;
                     return;
                 }
-
-                this.CompressTiles(dx, dy);
-                this.GenerateRandomTile();
             }
         }
 
