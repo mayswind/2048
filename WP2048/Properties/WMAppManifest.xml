@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
-  <DefaultLanguage xmlns="" code="zh-CN" />
-  <App xmlns="" ProductID="{01e94209-d334-4758-9dea-36666cb4880b}" Title="2048" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="WP2048 author" Description="2048 for Windows Phone" Publisher="WP2048" PublisherID="{4049e004-30b9-47c6-8683-ac2cca5dc255}">
+  <DefaultLanguage xmlns="" code="en-US" />
+  <App xmlns="" ProductID="{01e94209-d334-4758-9dea-36666cb4880b}" Title="2048" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="MaysWind" Description="2048 for Windows Phone" Publisher="MaysWind" PublisherID="{4049e004-30b9-47c6-8683-ac2cca5dc255}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_SENSORS" />
@@ -16,17 +16,17 @@
           <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
           <Count>0</Count>
           <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
-          <Title>2048</Title>
+          <Title>
+          </Title>
           <BackContent>
           </BackContent>
-          <BackBackgroundImageURI>
+          <BackBackgroundImageURI IsRelative="true" IsResource="false">
           </BackBackgroundImageURI>
           <BackTitle>
           </BackTitle>
-          <DeviceLockImageURI>
+          <DeviceLockImageURI IsRelative="true" IsResource="false">
           </DeviceLockImageURI>
-          <HasLarge>
-          </HasLarge>
+          <HasLarge>False</HasLarge>
         </TemplateFlip>
       </PrimaryToken>
     </Tokens>
