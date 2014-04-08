@@ -19,7 +19,7 @@
     </SupportedCultures>
     <XapOutputs>true</XapOutputs>
     <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-    <XapFilename>WP2048_Debug_AnyCPU.xap</XapFilename>
+    <XapFilename>WP2048.xap</XapFilename>
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <SilverlightAppEntry>WP2048.App</SilverlightAppEntry>
     <ValidateXaml>true</ValidateXaml>
