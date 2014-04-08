@@ -21,26 +21,32 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <StackPanel Grid.Row="0" Margin="12,10,0,5">
-            <TextBlock Text="2048" Foreground="#FF776E65" FontWeight="Bold" Margin="9,0,0,0" Style="{StaticResource PhoneTextTitle1Style}" />
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="12,10,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="12,10,0,5" FlowDirection="RightToLeft">
-            <Grid Background="#FFBBADA0" Margin="10,10,5,10">
-                <TextBlock Foreground="White" TextAlignment="Center" Margin="5">BEST<LineBreak /><LineBreak /><Run x:Name="bestScore" FontWeight="Bold">0</Run></TextBlock>
-            </Grid>
-            <Grid Background="#FFBBADA0" Margin="5,10,10,10">
+            <TextBlock Grid.Column="0" Text="2048" Foreground="#FF776E65" FontWeight="Bold" Margin="9,0,0,0" Style="{StaticResource PhoneTextTitle1Style}" />
+
+            <Grid Grid.Column="1" Background="#FFBBADA0" Margin="10,10,5,10">
                 <TextBlock Foreground="White" TextAlignment="Center" Margin="5">SCORE<LineBreak /><LineBreak /><Run x:Name="currentScore" FontWeight="Bold">0</Run></TextBlock>
             </Grid>
-        </StackPanel>
+            <Grid Grid.Column="2" Background="#FFBBADA0" Margin="5,10,10,10">
+                <TextBlock Foreground="White" TextAlignment="Center" Margin="5">BEST<LineBreak /><LineBreak /><Run x:Name="bestScore" FontWeight="Bold">0</Run></TextBlock>
+            </Grid>
+        </Grid>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="12,17,0,15">
-            <TextBlock Foreground="#FF776E65" VerticalAlignment="Center">Join and get to the 2048 tile!</TextBlock>
-        </StackPanel>
+        <Grid Grid.Row="1" Margin="12,17,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="12,17,0,15" FlowDirection="RightToLeft">
-            <Button x:Name="btnNewGame" Content="New Game" Click="btnNewGame_Click" Background="#FF8F7A66" BorderThickness="0" />
-        </StackPanel>
+            <TextBlock Grid.Column="0" Foreground="#FF776E65" VerticalAlignment="Center" TextWrapping="Wrap">Swipe to join the numbers and get to the 2048 tile!</TextBlock>
+            <Button Grid.Column="1" x:Name="btnNewGame" Content="New Game" Click="btnNewGame_Click" Background="#FF8F7A66" BorderThickness="0" />
+        </Grid>
         
         <Grid x:Name="gridTiles" Grid.Row="2" Margin="0,0,0,0" Background="#FFBBADA0" ManipulationCompleted="gridTiles_ManipulationCompleted">
             <Grid.RowDefinitions>
@@ -82,7 +88,7 @@
             <TextBlock Text="Game Over" FontSize="64" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
         </Grid>
         
-        <StackPanel Grid.Row="3" Margin="0,25,0,20">
+        <Grid Grid.Row="3" Margin="0,25,0,20">
             <RichTextBox Foreground="#FF776E65" FontWeight="Light" TextWrapping="Wrap">
                 <Paragraph>
                     2048 for Windows Phone created by
@@ -91,6 +97,6 @@
                     <Hyperlink x:Name="linkOriginUrl" FontWeight="SemiBold" Foreground="#FF776E65" MouseOverForeground="#FF776E65" Click="linkOriginUrl_Click">Gabriele Cirulli</Hyperlink>.
                 </Paragraph>
             </RichTextBox>
-        </StackPanel>
+        </Grid>
     </Grid>
 </phone:PhoneApplicationPage>
