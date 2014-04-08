@@ -284,7 +284,7 @@ namespace WP2048
         private void SetTileValue(Int32 x, Int32 y, Int32 value)
         {
             Int32 realValue = Math.Abs(value);
-            Int32 index = (realValue > 2048 ? 12 : (realValue < 2 ? 0 : (Int32)Math.Log(realValue, 2)));
+            Int32 index = (realValue > 2048 ? 12 : (realValue < 2 ? 0 : (Int32)Math.Round(Math.Log(realValue, 2))));
             TileStyle style = GameManager<T>.Styles[index];
 
             this._gridManager.SetTileValue(x, y, value, style);
