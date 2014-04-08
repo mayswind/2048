@@ -6,11 +6,11 @@ using System.Resources;
 // 有关程序集的常规信息通过下列特性集 
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("WP2048")]
+[assembly: AssemblyTitle("2048")]
 [assembly: AssemblyDescription("2048 for Windows Phone")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MaysWind Studio")]
-[assembly: AssemblyProduct("WP2048")]
+[assembly: AssemblyProduct("2048")]
 [assembly: AssemblyCopyright("Copyright © MaysWind(SunYunchen@Gmail.com) 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
